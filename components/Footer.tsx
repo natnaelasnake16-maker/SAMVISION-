@@ -36,8 +36,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onBranchChange }) => {
               { label: 'Optical Shop', view: 'shop' },
               { label: 'Corporate', view: 'corporate' },
               { label: 'About Us', view: 'about' },
-              { label: 'Contact', view: 'contact' },
-              { label: 'Admin Portal', view: 'admin' }
+              { label: 'Contact', view: 'contact' }
             ].map(link => (
               <li key={link.label} className="hover:text-primary cursor-pointer transition-colors" onClick={() => onNavigate(link.view as ViewType)}>{link.label}</li>
             ))}
