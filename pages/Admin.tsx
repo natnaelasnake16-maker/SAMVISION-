@@ -80,67 +80,6 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
     if (authStatus === 'true') setIsAuthorized(true);
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passcode === '2025') {
-      setIsAuthorized(true);
-      sessionStorage.setItem('admin_authorized', 'true');
-      setLoginError(false);
-    } else {
-      setLoginError(true);
-      setPasscode('');
-    }
-  };
-
-  if (!isAuthorized) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-teal-500/10 rounded-full blur-[120px]" />
-        </div>
-
-        <GlassCard className="w-full max-w-md p-10 md:p-12 border-white/10 relative z-10 flex flex-col items-center space-y-8">
-          <div className="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center text-primary mb-2">
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-          </div>
-
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Admin Gate</h2>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-[0.3em]">Access Restricted</p>
-          </div>
-
-          <form onSubmit={handleLogin} className="w-full space-y-6">
-            <div className="space-y-2">
-              <input
-                type="password"
-                value={passcode}
-                onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Secure Passcode"
-                className={`w-full bg-white/5 border ${loginError ? 'border-accent/40 bg-accent/5' : 'border-white/10'} rounded-2xl px-6 py-5 text-white text-center text-xl tracking-[0.5em] outline-none focus:border-primary transition-all placeholder:text-[10px] placeholder:tracking-widest placeholder:text-slate-600 font-bold`}
-                autoFocus
-              />
-              {loginError && <p className="text-[10px] text-accent font-black text-center uppercase tracking-widest animate-pulse">Invalid Credentials</p>}
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-primary text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-teal-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
-            >
-              Authorize Access
-            </button>
-          </form>
-
-          <button
-            onClick={() => onNavigate('home')}
-            className="text-[9px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-colors"
-          >
-            Return to Public Site
-          </button>
-        </GlassCard>
-      </div>
-    );
-  }
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -243,8 +182,10 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (isAuthorized) {
+      fetchProducts();
+    }
+  }, [isAuthorized]);
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
@@ -1324,6 +1265,67 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
 
     </div>
   );
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passcode === '2025') {
+      setIsAuthorized(true);
+      sessionStorage.setItem('admin_authorized', 'true');
+      setLoginError(false);
+    } else {
+      setLoginError(true);
+      setPasscode('');
+    }
+  };
+
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-teal-500/10 rounded-full blur-[120px]" />
+        </div>
+
+        <GlassCard className="w-full max-w-md p-10 md:p-12 border-white/10 relative z-10 flex flex-col items-center space-y-8">
+          <div className="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center text-primary mb-2">
+            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+          </div>
+
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Admin Gate</h2>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-[0.3em]">Access Restricted</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="w-full space-y-6">
+            <div className="space-y-2">
+              <input
+                type="password"
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value)}
+                placeholder="Secure Passcode"
+                className={`w-full bg-white/5 border ${loginError ? 'border-accent/40 bg-accent/5' : 'border-white/10'} rounded-2xl px-6 py-5 text-white text-center text-xl tracking-[0.5em] outline-none focus:border-primary transition-all placeholder:text-[10px] placeholder:tracking-widest placeholder:text-slate-600 font-bold`}
+                autoFocus
+              />
+              {loginError && <p className="text-[10px] text-accent font-black text-center uppercase tracking-widest animate-pulse">Invalid Credentials</p>}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-primary text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-teal-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            >
+              Authorize Access
+            </button>
+          </form>
+
+          <button
+            onClick={() => onNavigate('home')}
+            className="text-[9px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-colors"
+          >
+            Return to Public Site
+          </button>
+        </GlassCard>
+      </div>
+    );
+  }
 
   if (loading && products.length === 0) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>;
 
