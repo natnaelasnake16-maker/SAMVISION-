@@ -1,0 +1,8 @@
+{
+  "name": "SamVision Optical & Eye Clinic",
+  "description": "A premium clinical and optical platform for SamVision, featuring branch-aware booking, e-commerce for frames and ZEISS lenses, and corporate B2B services with a modern glassmorphism UI.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
