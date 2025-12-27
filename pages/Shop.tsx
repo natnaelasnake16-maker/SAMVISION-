@@ -72,6 +72,11 @@ const ProductCard: React.FC<{ product: Product; onClick: () => void }> = ({ prod
 const Shop: React.FC<ShopProps> = ({ onNavigate }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [selectedProduct]);
   const [activeCategory, setActiveCategory] = useState('All Frames');
   const [activeShape, setActiveShape] = useState('All Shapes');
   const [minPrice, setMinPrice] = useState(500);
@@ -494,15 +499,41 @@ const Shop: React.FC<ShopProps> = ({ onNavigate }) => {
               <svg className="w-4 h-4 md:w-5 md:h-5 text-slate-500 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
 
-            <div className="md:w-[45%] bg-slate-50/80 p-4 sm:p-6 md:p-12 flex items-center justify-center relative overflow-hidden flex-shrink-0">
+            <div className="md:w-[45%] bg-slate-50/80 relative flex-shrink-0 flex flex-col items-center justify-center overflow-hidden">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white to-transparent opacity-60" />
-              {selectedProduct.image ? (
-                <img src={selectedProduct.image} className="w-full h-40 sm:h-48 md:h-auto object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.1)] relative z-10 transition-transform duration-700 hover:scale-105" alt={selectedProduct.name || 'Frame'} />
-              ) : (
-                <div className="w-full aspect-square flex items-center justify-center text-slate-300 relative z-10">
-                  <svg className="w-16 h-16 md:w-20 md:h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
+
+              <div
+                className="w-full h-full flex items-center overflow-x-auto snap-x snap-mandatory no-scrollbar"
+                onScroll={(e) => {
+                  const scrollLeft = (e.target as HTMLDivElement).scrollLeft;
+                  const width = (e.target as HTMLDivElement).clientWidth;
+                  const index = Math.round(scrollLeft / width);
+                  setCurrentImageIndex(index);
+                }}
+              >
+                {[selectedProduct.image, ...(selectedProduct.additionalImages || [])].filter(Boolean).map((img, idx) => (
+                  <div key={idx} className="w-full h-full flex-shrink-0 snap-center flex items-center justify-center p-4 sm:p-6 md:p-12">
+                    <img src={img} className="w-full h-40 sm:h-48 md:h-auto object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.1)] relative z-10 transition-transform duration-700 hover:scale-105" alt={`${selectedProduct.name} - View ${idx + 1}`} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Pagination Dots */}
+              {((selectedProduct.additionalImages?.length || 0) > 0) && (
+                <div className="absolute bottom-6 flex space-x-2 z-20">
+                  {[selectedProduct.image, ...(selectedProduct.additionalImages || [])].filter(Boolean).map((_, idx) => (
+                    <div
+                      key={idx}
+                      className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${currentImageIndex === idx ? 'bg-primary w-4' : 'bg-slate-300'}`}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Swipe/Scroll Hint for Mobile */}
+              {((selectedProduct.additionalImages?.length || 0) > 0) && (
+                <div className="absolute bottom-10 text-[7px] font-black text-slate-300 uppercase tracking-widest md:hidden animate-pulse">
+                  Swipe for more angles
                 </div>
               )}
             </div>

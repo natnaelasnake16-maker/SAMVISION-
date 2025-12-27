@@ -74,13 +74,14 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [adminSearchQuery, setAdminSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const additionalImagesRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const authStatus = sessionStorage.getItem('admin_authorized');
     if (authStatus === 'true') setIsAuthorized(true);
   }, []);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>, isAdditional: boolean = false) => {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
@@ -110,7 +111,17 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
           const ctx = canvas.getContext('2d');
           ctx?.drawImage(img, 0, 0, width, height);
           const compressed = canvas.toDataURL('image/jpeg', 0.7);
-          setFormData({ ...formData, image: compressed });
+
+          if (isAdditional) {
+            const current = formData.additionalImages || [];
+            if (current.length >= 3) {
+              alert("Maximum 3 additional images allowed.");
+              return;
+            }
+            setFormData({ ...formData, additionalImages: [...current, compressed] });
+          } else {
+            setFormData({ ...formData, image: compressed });
+          }
         };
         img.src = e.target?.result as string;
       };
@@ -128,7 +139,8 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
         .select(`
           *,
           frame_branches(*),
-          lens_compatibility(*)
+          lens_compatibility(*),
+          frame_images(*)
         `)
         .order('created_at', { ascending: false });
 
@@ -147,6 +159,7 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
           discountType: f.discount_type === 'Fixed Amount' ? 'Fixed Amount' : (f.discount_type === 'Percentage' ? 'Percentage' : undefined),
           discountValue: f.discount_value || 0,
           image: f.image || '',
+          additionalImages: (f.frame_images || []).map((img: any) => img.image),
           category: (f.category || 'frames') as any,
           gender: (f.gender || 'Unisex') as any,
           shape: (f.shape || 'Rectangle') as any,
@@ -216,6 +229,7 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
         acc[b.id] = { quantity: 0, lowStockThreshold: 5, status: 'Out of stock' };
         return acc;
       }, {} as Record<string, BranchStock>),
+      additionalImages: [],
       homepageFlags: { isNew: true, isPopular: false, isDiscountPromo: false }
     });
     setViewMode('form');
@@ -298,7 +312,21 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
 
       if (frameError) throw frameError;
 
-      // Run stock and lens operations in parallel for better performance
+      // Run stock, lens, and image operations in parallel
+      const imagePromise = (async () => {
+        // First delete existing additional images
+        await supabase.from('frame_images').delete().eq('frame_id', frame.id);
+
+        if (submission.additionalImages && submission.additionalImages.length > 0) {
+          const imageRows = submission.additionalImages.map(img => ({
+            frame_id: frame.id,
+            image: img
+          }));
+          const { error: imgError } = await supabase.from('frame_images').insert(imageRows);
+          if (imgError) console.error('❌ Image Save Error:', imgError.message);
+        }
+      })();
+
       const stockPromise = submission.stockPerBranch && Object.keys(submission.stockPerBranch).length > 0
         ? (async () => {
           const stockRows = Object.entries(submission.stockPerBranch!).map(([branchId, stock]) => ({
@@ -1170,14 +1198,39 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
               </div>
 
               <div className="space-y-4 pt-4 border-t border-slate-100">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em]">Additional Perspectives</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em]">Additional Perspectives ({formData.additionalImages?.length || 0}/3)</p>
                 <div className="grid grid-cols-3 gap-3">
-                  <button
-                    className="aspect-square border-2 border-dashed border-slate-100 rounded-xl flex items-center justify-center text-slate-300 hover:border-primary hover:text-primary transition-all"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
-                  </button>
+                  {formData.additionalImages?.map((img, idx) => (
+                    <div key={idx} className="relative aspect-square rounded-xl overflow-hidden group">
+                      <img src={img} className="w-full h-full object-cover" alt={`Perspective ${idx + 1}`} />
+                      <button
+                        onClick={() => {
+                          const next = [...(formData.additionalImages || [])];
+                          next.splice(idx, 1);
+                          setFormData({ ...formData, additionalImages: next });
+                        }}
+                        className="absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      </button>
+                    </div>
+                  ))}
+                  {(formData.additionalImages?.length || 0) < 3 && (
+                    <button
+                      onClick={() => additionalImagesRef.current?.click()}
+                      className="aspect-square border-2 border-dashed border-slate-100 rounded-xl flex items-center justify-center text-slate-300 hover:border-primary hover:text-primary transition-all"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
+                    </button>
+                  )}
                 </div>
+                <input
+                  type="file"
+                  ref={additionalImagesRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, true)}
+                />
               </div>
             </div>
           </div>
