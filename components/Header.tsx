@@ -38,9 +38,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate, selectedBranch
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ease-in-out ${isScrolled
-        ? 'navbar-glass h-16 shadow-lg shadow-slate-900/5'
-        : 'bg-white/40 backdrop-blur-md h-16 md:h-20 border-transparent'
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ease-in-out navbar-glass ${isScrolled
+        ? 'h-16 shadow-lg shadow-slate-900/5'
+        : 'h-16 md:h-20 border-transparent shadow-none capitalize'
         }`}
     >
       <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
