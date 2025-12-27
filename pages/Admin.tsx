@@ -113,19 +113,23 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
           const compressed = canvas.toDataURL('image/jpeg', 0.7);
 
           if (isAdditional) {
-            const current = formData.additionalImages || [];
-            if (current.length >= 3) {
-              alert("Maximum 3 additional images allowed.");
-              return;
-            }
-            setFormData({ ...formData, additionalImages: [...current, compressed] });
+            setFormData(prev => {
+              const current = prev.additionalImages || [];
+              if (current.length >= 3) {
+                alert("Maximum 3 additional images allowed.");
+                return prev;
+              }
+              return { ...prev, additionalImages: [...current, compressed] };
+            });
           } else {
-            setFormData({ ...formData, image: compressed });
+            setFormData(prev => ({ ...prev, image: compressed }));
           }
         };
         img.src = e.target?.result as string;
       };
       reader.readAsDataURL(file);
+      // Reset input value to allow re-uploading the same file if needed
+      event.target.value = '';
     }
   };
 
@@ -359,8 +363,8 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
         }
       })();
 
-      // Wait for both operations in parallel
-      await Promise.all([stockPromise, lensPromise]);
+      // Wait for all operations in parallel
+      await Promise.all([stockPromise, lensPromise, imagePromise]);
 
       // Optimistically update the UI - convert submission to Product format and update state
       const newProduct: Product = {
@@ -384,7 +388,8 @@ const Admin: React.FC<AdminProps> = ({ onNavigate }) => {
         colors: submission.colors || [],
         status: submission.status || 'Draft',
         homepageFlags: submission.homepageFlags || { isNew: true, isPopular: false, isDiscountPromo: false },
-        stockPerBranch: submission.stockPerBranch || {}
+        stockPerBranch: submission.stockPerBranch || {},
+        additionalImages: submission.additionalImages || []
       };
 
       // Update products list optimistically
