@@ -81,6 +81,7 @@ const Shop: React.FC<ShopProps> = ({ onNavigate }) => {
   const [error, setError] = useState<string | null>(null);
   const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -218,10 +219,33 @@ const Shop: React.FC<ShopProps> = ({ onNavigate }) => {
     <div className="bg-[#fbfcfd] min-h-screen">
       <div className="h-16 md:h-20" />
 
-      <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row min-h-screen">
+      <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row min-h-screen relative">
+        {/* Mobile Filter Toggle */}
+        <div className="lg:hidden sticky top-16 md:top-20 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 p-4 flex items-center justify-between">
+          <button
+            onClick={() => setIsFilterOpen(true)}
+            className="flex items-center space-x-2 bg-slate-900 text-white px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+            <span>Filters</span>
+            {(activeCategory !== 'All Frames' || activeShape !== 'All Shapes' || minPrice > 500 || maxPrice < 25000 || selectedColor) && (
+              <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+            )}
+          </button>
+          <div className="flex flex-col items-end">
+            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{filteredProducts.length} Frames</p>
+          </div>
+        </div>
 
         {/* Enhanced Sidebar Filter */}
-        <aside className="w-full lg:w-80 flex-shrink-0 lg:sticky lg:top-20 lg:h-[calc(100vh-80px)] overflow-y-auto p-6 md:p-8 lg:border-r border-slate-100 space-y-12 no-scrollbar">
+        <aside className={`fixed inset-0 lg:relative lg:inset-auto z-[110] lg:z-0 lg:w-80 flex-shrink-0 lg:sticky lg:top-20 lg:h-[calc(100vh-80px)] overflow-y-auto p-6 md:p-8 lg:border-r border-slate-100 space-y-12 no-scrollbar bg-white lg:bg-transparent transition-transform duration-500 transform ${isFilterOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+          {/* Mobile Close Button */}
+          <div className="lg:hidden flex items-center justify-between mb-8 border-b border-slate-100 pb-6">
+            <h2 className="text-xl font-black text-slate-900 tracking-tighter">FILTERS</h2>
+            <button onClick={() => setIsFilterOpen(false)} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center">
+              <svg className="w-5 h-5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
 
           {/* Categories */}
           <div className="space-y-6">
@@ -333,12 +357,18 @@ const Shop: React.FC<ShopProps> = ({ onNavigate }) => {
             </div>
           </div>
 
-          <div className="pt-8 border-t border-slate-50">
+          <div className="pt-8 border-t border-slate-50 space-y-4">
             <button
               onClick={clearAllFilters}
               className="w-full py-4 glass border-slate-200 text-slate-400 hover:text-primary hover:border-primary transition-all rounded-xl text-[9px] font-black uppercase tracking-[0.2em]"
             >
               Clear All Filters
+            </button>
+            <button
+              onClick={() => setIsFilterOpen(false)}
+              className="lg:hidden w-full py-5 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-slate-900/10"
+            >
+              Apply Filters
             </button>
           </div>
         </aside>
