@@ -93,10 +93,14 @@ const Shop: React.FC<ShopProps> = ({ onNavigate }) => {
     setError(null);
     setHasAttemptedFetch(true);
     try {
-      // Optimize: Only fetch fields needed for shop display (no relations)
+      // Optimize: Only fetch fields needed for shop display
       const { data, error: dbError } = await supabase
         .from('frames')
-        .select('*, frame_branches(*)')
+        .select(`
+          *,
+          frame_branches(*),
+          frame_images(*)
+        `)
         .eq('status', 'Active')
         .order('created_at', { ascending: false });
 
@@ -115,6 +119,7 @@ const Shop: React.FC<ShopProps> = ({ onNavigate }) => {
           discountType: f.discount_type === 'Fixed Amount' ? 'Fixed Amount' : (f.discount_type === 'Percentage' ? 'Percentage' : undefined),
           discountValue: f.discount_value || 0,
           image: f.image || '',
+          additionalImages: (f.frame_images || []).map((img: any) => img.image),
           category: (f.category || 'frames') as any,
           gender: (f.gender || 'Unisex') as any,
           shape: (f.shape || 'Rectangle') as any,
