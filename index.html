@@ -1,33 +1,42 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/logos/favicon.svg">
+    <link rel="alternate icon" href="/images/logos/favicon.svg">
+
     <!-- Primary Meta Tags -->
     <title>SamVision | Advanced Ophthalmology & Premium Optical Center</title>
     <meta name="title" content="SamVision | Advanced Ophthalmology & Premium Optical Center">
-    <meta name="description" content="Ethiopia's premier eye clinic offering Phaco cataract surgery, pediatric eye care, and ZEISS certified optical solutions. Precision vision care meets luxury eyewear.">
-    <meta name="keywords" content="Eye Clinic Ethiopia, Cataract Surgery Addis Ababa, Ophthalmologist Ethiopia, ZEISS Lenses Addis Ababa, Pediatric Eye Care, SamVision Optical">
+    <meta name="description"
+        content="Ethiopia's premier eye clinic offering Phaco cataract surgery, pediatric eye care, and ZEISS certified optical solutions. Precision vision care meets luxury eyewear.">
+    <meta name="keywords"
+        content="Eye Clinic Ethiopia, Cataract Surgery Addis Ababa, Ophthalmologist Ethiopia, ZEISS Lenses Addis Ababa, Pediatric Eye Care, SamVision Optical">
     <meta name="author" content="SamVision Optical & Eye Clinic">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://samvision.et/">
     <meta property="og:title" content="SamVision | Advanced Ophthalmology & Premium Optical Center">
-    <meta property="og:description" content="State-of-the-art clinical screening and advanced surgical procedures. Restoring vision with international standards in Ethiopia.">
+    <meta property="og:description"
+        content="State-of-the-art clinical screening and advanced surgical procedures. Restoring vision with international standards in Ethiopia.">
     <meta property="og:image" content="/images/logos/official-logo.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://samvision.et/">
     <meta property="twitter:title" content="SamVision | Advanced Ophthalmology & Premium Optical Center">
-    <meta property="twitter:description" content="State-of-the-art clinical screening and advanced surgical procedures. Restoring vision with international standards in Ethiopia.">
+    <meta property="twitter:description"
+        content="State-of-the-art clinical screening and advanced surgical procedures. Restoring vision with international standards in Ethiopia.">
     <meta property="twitter:image" content="/images/logos/official-logo.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #19A89E;
@@ -36,6 +45,7 @@
             --section-radius: 2rem;
             --medical-white: #F6F9FA;
         }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--medical-white);
@@ -43,7 +53,7 @@
             line-height: 1.5;
             -webkit-tap-highlight-color: transparent;
         }
-        
+
         /* Liquid Frost Glass - Highly Translucent & Refractive */
         .glass {
             background: rgba(255, 255, 255, 0.18);
@@ -72,70 +82,109 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px -4px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.08);
             border-radius: var(--glass-radius);
         }
-        
+
         .input-glass {
             background: rgba(255, 255, 255, 0.95);
             border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 12px;
             transition: all 0.2s ease;
         }
+
         .input-glass:focus {
             border-color: var(--primary);
             background: #fff;
             box-shadow: 0 0 0 4px rgba(25, 168, 158, 0.1);
         }
-        
-        .text-primary { color: var(--primary); }
-        .bg-primary { background-color: var(--primary); }
-        .border-primary { border-color: var(--primary); }
-        .text-accent { color: var(--accent); }
-        .bg-accent { background-color: var(--accent); }
-        
-        h1, h2, h3 { 
-            letter-spacing: -0.03em; 
+
+        .text-primary {
+            color: var(--primary);
+        }
+
+        .bg-primary {
+            background-color: var(--primary);
+        }
+
+        .border-primary {
+            border-color: var(--primary);
+        }
+
+        .text-accent {
+            color: var(--accent);
+        }
+
+        .bg-accent {
+            background-color: var(--accent);
+        }
+
+        h1,
+        h2,
+        h3 {
+            letter-spacing: -0.03em;
             font-weight: 900;
         }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .reveal {
             opacity: 0;
             will-change: transform, opacity;
         }
+
         .animate-fade-up {
             animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .shadow-soft {
-            box-shadow: 0 10px 30px -8px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.05);
         }
-        
+
         .shadow-glow {
             box-shadow: 0 0 25px rgba(25, 168, 158, 0.2);
         }
 
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
 
         .animate-infinite-scroll {
             display: flex;
             width: max-content;
             animation: scroll 40s linear infinite;
         }
+
         @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
         }
 
         .section-padding {
             padding-top: 4rem;
             padding-bottom: 4rem;
         }
+
         @media (min-width: 768px) {
             .section-padding {
                 padding-top: 8rem;
@@ -143,7 +192,7 @@
             }
         }
     </style>
-<script type="importmap">
+    <script type="importmap">
 {
   "imports": {
     "react/": "https://esm.sh/react@^19.2.3/",
@@ -152,10 +201,12 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/index.css">
 </head>
+
 <body>
     <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>
